@@ -17,5 +17,6 @@
     
     "rules": {
         "semi": ["warn","never"]
+        // "vue/multi-word-component-names": 0
     }
 }
