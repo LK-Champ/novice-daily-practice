@@ -1,7 +1,8 @@
 <template>
   <div>
-    1
+    <Chart />
   </div>
 </template>
 <script lang="ts">
+import Chart from "../components/Chart.vue"
 </script>

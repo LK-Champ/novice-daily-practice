@@ -1,6 +1,5 @@
 <template>
-
-<el-container>
+  <el-container>
   
   <el-header>
     <el-menu
