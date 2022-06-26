@@ -3338,6 +3338,7 @@
     children,
     normalizationType
   ) {
+    // 如果 VNode 数据是响应式了创建一个空的 VNode
     if (isDef(data) && isDef((data).__ob__)) {
       warn(
         "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
