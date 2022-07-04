@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../vue.js"></script>
+</head>
+<body>
+  <div>
+    </br>
+    </p>
+  </div>
+  <div id="app"></div>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        show: true,
+        text: '小白',
+        message: '好久不见'
+      },
+      optimize: true,
+      // delimiters: ['${', '}'],
+      // template: `
+      //   <div><!-- 注释1 -->1111: {{ text }}<span>111</span></div>
+      // `
+      template: `
+        <div>
+          <div>hello, {{ text }}，{{ message }}</div>
+          <div>hello, world</div>
+        </div>
+      `
+    });
+  </script>
+</body>
+</html>

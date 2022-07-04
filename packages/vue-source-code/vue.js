@@ -9070,6 +9070,10 @@
       rawTokens.push(tokenValue = text.slice(lastIndex));
       tokens.push(JSON.stringify(tokenValue));
     }
+    // console.log( {
+    //   expression: tokens.join('+'),
+    //   tokens: rawTokens
+    // });
     return {
       expression: tokens.join('+'),
       tokens: rawTokens
@@ -9242,6 +9246,8 @@
   }
 
   function parseHTML (html, options) {
+    // 定义一个栈，作用是存储开始标签
+    // 当在 while 循环时，如果遇到一个非单标签，就会将开始标签 push 到数组中，这样可以检测我们写的 template 是否符合嵌套、开闭规范
     var stack = [];
     var expectHTML = options.expectHTML;
     var isUnaryTag$$1 = options.isUnaryTag || no;
@@ -9250,11 +9256,12 @@
     var last, lastTag;
     while (html) {
       last = html;
-      // Make sure we're not in a plaintext content element like script/style
+      // 确保我们没有像脚本/样式这样的纯文本内容元素
       if (!lastTag || !isPlainTextElement(lastTag)) {
         var textEnd = html.indexOf('<');
         if (textEnd === 0) {
           // Comment:
+          // var comment = /^<!\--/;
           if (comment.test(html)) {
             var commentEnd = html.indexOf('-->');
 
@@ -9268,6 +9275,7 @@
           }
 
           // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
+          // var conditionalComment = /^<!\[/;
           if (conditionalComment.test(html)) {
             var conditionalEnd = html.indexOf(']>');
 
@@ -9278,6 +9286,7 @@
           }
 
           // Doctype:
+          // /^<!DOCTYPE [^>]+>/i
           var doctypeMatch = html.match(doctype);
           if (doctypeMatch) {
             advance(doctypeMatch[0].length);
@@ -9384,7 +9393,9 @@
         };
         advance(start[0].length);
         var end, attr;
-        while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
+        while (
+          !(end = html.match(startTagClose)) 
+          && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
           attr.start = index;
           advance(attr[0].length);
           attr.end = index;
@@ -9400,7 +9411,9 @@
     }
 
     function handleStartTag (match) {
+      // 开始标签
       var tagName = match.tagName;
+      // 是否是一元标签
       var unarySlash = match.unarySlash;
 
       if (expectHTML) {
@@ -9412,6 +9425,9 @@
         }
       }
 
+      // 当它为真时代表着标签是一元标签，否则是二元标签。
+      // 'area,base,br,col,embed,frame,hr,img,input,isindex,keygen,' +
+      // 'link,meta,param,source,track,wbr'
       var unary = isUnaryTag$$1(tagName) || !!unarySlash;
 
       var l = match.attrs.length;
@@ -9438,6 +9454,7 @@
       }
 
       if (options.start) {
+        // 调用开始标签的钩子函数
         options.start(tagName, attrs, unary, match.start, match.end);
       }
     }
@@ -9448,6 +9465,7 @@
       if (end == null) { end = index; }
 
       // Find the closest opened tag of the same type
+      // 查找同一类型的最近打开的标记
       if (tagName) {
         lowerCasedTagName = tagName.toLowerCase();
         for (pos = stack.length - 1; pos >= 0; pos--) {
@@ -9457,6 +9475,7 @@
         }
       } else {
         // If no tag name is provided, clean shop
+        // 如果未提供标签名称，请清理车间
         pos = 0;
       }
 
@@ -9685,6 +9704,7 @@
       start: function start (tag, attrs, unary, start$1, end) {
         // check namespace.
         // inherit parent ns if there is one
+        // 检查命名空间,继承父ns（如果有）
         var ns = (currentParent && currentParent.ns) || platformGetTagNamespace(tag);
 
         // handle IE svg bug
@@ -9694,6 +9714,13 @@
         }
 
         var element = createASTElement(tag, attrs, currentParent);
+        // {
+        //   type: 1,
+        //   tag:"div",
+        //   parent: null,
+        //   children: [],
+        //   attrsList: []
+        // }
         if (ns) {
           element.ns = ns;
         }
@@ -9767,6 +9794,7 @@
         } else {
           closeElement(element);
         }
+        // console.log(root);
       },
 
       end: function end (tag, start, end$1) {
@@ -9781,6 +9809,7 @@
       },
 
       chars: function chars (text, start, end) {
+        // 首先判断了 currentParent 变量是否存在，我们知道 currentParent 变量指向的是当前节点的父节点:
         if (!currentParent) {
           {
             if (text === template) {
@@ -9799,6 +9828,7 @@
         }
         // IE textarea placeholder bug
         /* istanbul ignore if */
+        // ②，第二个判断主要是解决 ie textarea 占位符的问题。issue:https://github.com/vuejs/vue/issues/4098
         if (isIE &&
           currentParent.tag === 'textarea' &&
           currentParent.attrsMap.placeholder === text
@@ -9806,10 +9836,13 @@
           return
         }
         var children = currentParent.children;
+        // 这个嵌套三元表达式判断了条件 inPre || text.trim() 的真假，
+        // 如果为 true，检测了当前文本节点的父节点是否是文本标签，如果是文本标签则直接使用原始文本，
+        // 否则使用decodeHTMLCached 函数对文本进行解码。
         if (inPre || text.trim()) {
           text = isTextTag(currentParent) ? text : decodeHTMLCached(text);
         } else if (!children.length) {
-          // remove the whitespace-only node right after an opening tag
+          // 删除开头标记后面的纯空白节点
           text = '';
         } else if (whitespaceOption) {
           if (whitespaceOption === 'condense') {
@@ -9829,6 +9862,8 @@
           }
           var res;
           var child;
+          // 判断当前元素未使用v-pre 指令，text不为空，使用 parseText 函数成功解析当前文本节点的内容。
+          // 这里的重点在于 parseText 函数，parseText 函数的作用就是用来解析如果我们的文本包含了字面量表达式
           if (!inVPre && text !== ' ' && (res = parseText(text, delimiters))) {
             child = {
               type: 2,
@@ -9972,8 +10007,6 @@
       }
     }
   }
-
-
 
   function parseFor (exp) {
     var inMatch = exp.match(forAliasRE);
@@ -10524,6 +10557,7 @@
     if (dir.value) {
       addProp(el, 'textContent', ("_s(" + (dir.value) + ")"), dir);
     }
+    console.log(addProp);
   }
 
   /*  */
@@ -10532,6 +10566,7 @@
     if (dir.value) {
       addProp(el, 'innerHTML', ("_s(" + (dir.value) + ")"), dir);
     }
+    console.log(addProp);
   }
 
   var directives$1 = {
@@ -10552,7 +10587,8 @@
     canBeLeftOpenTag: canBeLeftOpenTag,
     isReservedTag: isReservedTag,
     getTagNamespace: getTagNamespace,
-    staticKeys: genStaticKeys(modules$1)
+    staticKeys: genStaticKeys(modules$1),
+    optimize: true,
   };
 
   /*  */
@@ -10578,8 +10614,10 @@
     isStaticKey = genStaticKeysCached(options.staticKeys || '');
     isPlatformReservedTag = options.isReservedTag || no;
     // first pass: mark all non-static nodes.
+    // 第一步：标记所有非静态节点。
     markStatic$1(root);
     // second pass: mark static roots.
+    // 第二步：标记静态根
     markStaticRoots(root, false);
   }
 
@@ -11112,6 +11150,7 @@
     // component v-model
     if (el.model) {
       data += "model:{value:" + (el.model.value) + ",callback:" + (el.model.callback) + ",expression:" + (el.model.expression) + "},";
+      console.log(data);
     }
     // inline-template
     if (el.inlineTemplate) {
@@ -11793,9 +11832,12 @@
     options
   ) {
     var ast = parse(template.trim(), options);
+    console.log(ast);
+    console.log(options.optimize);
     if (options.optimize !== false) {
       optimize(ast, options);
     }
+    console.log(ast);
     var code = generate(ast, options);
     return {
       ast: ast,
@@ -11837,9 +11879,12 @@
     el,
     hydrating
   ) {
+    // 获取根元素
+    // 1、如果是一个字符串，就查询第一个元素符合的元素 DOM，如果没有找到，就创建一个 div 
+    // 2、不是字符串直接返回
     el = el && query(el);
 
-    /* istanbul ignore if */
+    // 非法校验警告
     if (el === document.body || el === document.documentElement) {
       warn(
         "Do not mount Vue to <html> or <body> - mount to normal elements instead."
@@ -11848,7 +11893,7 @@
     }
 
     var options = this.$options;
-    // resolve template/el and convert to render function
+    // 解析 template / el 并转换为渲染函数
     if (!options.render) {
       var template = options.template;
       if (template) {
@@ -11885,7 +11930,8 @@
           shouldDecodeNewlines: shouldDecodeNewlines,
           shouldDecodeNewlinesForHref: shouldDecodeNewlinesForHref,
           delimiters: options.delimiters,
-          comments: options.comments
+          comments: options.comments,
+          whitespace: true,
         }, this);
         var render = ref.render;
         var staticRenderFns = ref.staticRenderFns;
