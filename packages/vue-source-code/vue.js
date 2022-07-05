@@ -114,6 +114,7 @@
    * Make a map and return a function for checking if a key
    * is in that map.
    */
+  // 生成一个 map 并且返回一个函数来判断 key 是否在这个 map z中
   function makeMap (
     str,
     expectsLowerCase
@@ -161,6 +162,7 @@
   /**
    * Create a cached version of a pure function.
    */
+  //创建纯函数的缓存版本。
   function cached (fn) {
     var cache = Object.create(null);
     return (function cachedFn (str) {
@@ -172,6 +174,7 @@
   /**
    * Camelize a hyphen-delimited string.
    */
+  // 
   var camelizeRE = /-(\w)/g;
   var camelize = cached(function (str) {
     return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
@@ -9794,7 +9797,6 @@
         } else {
           closeElement(element);
         }
-        // console.log(root);
       },
 
       end: function end (tag, start, end$1) {
@@ -10588,7 +10590,7 @@
     isReservedTag: isReservedTag,
     getTagNamespace: getTagNamespace,
     staticKeys: genStaticKeys(modules$1),
-    optimize: true,
+    // optimize: true,
   };
 
   /*  */
@@ -10611,12 +10613,11 @@
    */
   function optimize (root, options) {
     if (!root) { return }
+    console.log(genStaticKeysCached);
     isStaticKey = genStaticKeysCached(options.staticKeys || '');
     isPlatformReservedTag = options.isReservedTag || no;
-    // first pass: mark all non-static nodes.
-    // 第一步：标记所有非静态节点。
+    // 第一步：标记所有静态节点。
     markStatic$1(root);
-    // second pass: mark static roots.
     // 第二步：标记静态根
     markStaticRoots(root, false);
   }
@@ -11832,12 +11833,9 @@
     options
   ) {
     var ast = parse(template.trim(), options);
-    console.log(ast);
-    console.log(options.optimize);
     if (options.optimize !== false) {
       optimize(ast, options);
     }
-    console.log(ast);
     var code = generate(ast, options);
     return {
       ast: ast,
