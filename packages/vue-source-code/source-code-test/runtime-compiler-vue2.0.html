@@ -17,19 +17,30 @@
     new Vue({
       el: '#app',
       data: {
-        show: true,
-        text: '小白',
-        message: '好久不见'
+        isShow: true,
+        list: [
+          '小白',
+          '小黄',
+          '小黑',
+          '小绿'
+        ],
+      },
+      methods: {
+        clickItem (item) {
+          console.log(`${item} 被点击了 `);
+        },
       },
       optimize: true,
-      // delimiters: ['${', '}'],
-      // template: `
-      //   <div><!-- 注释1 -->1111: {{ text }}<span>111</span></div>
-      // `
       template: `
         <div>
-          <div v-pre>hello, {{ text }}，{{ message }}</div>
-          <div>hello, world</div>
+          <ul class="list" v-if="isShow">
+            <li 
+              v-for="(item, index) in list" 
+              @click="clickItem(item)"
+            >
+              {{item}}:{{index}}
+            </li>
+          </ul>
         </div>
       `
     });

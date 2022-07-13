@@ -3119,6 +3119,7 @@
         componentInstance._isMounted = true;
         callHook(componentInstance, 'mounted');
       }
+      console.log(vnode);
       if (vnode.data.keepAlive) {
         if (context._isMounted) {
           // vue-router#1212
@@ -4054,6 +4055,7 @@
     hydrating = false;
     if (vm.$vnode == null) {
       vm._isMounted = true;
+      console.log(vm);
       callHook(vm, 'mounted');
     }
     return vm
@@ -10613,7 +10615,6 @@
    */
   function optimize (root, options) {
     if (!root) { return }
-    console.log(genStaticKeysCached);
     isStaticKey = genStaticKeysCached(options.staticKeys || '');
     isPlatformReservedTag = options.isReservedTag || no;
     // 第一步：标记所有静态节点。
@@ -10635,6 +10636,10 @@
       // do not make component slot content static. this avoids
       // 1. components not able to mutate slot nodes
       // 2. static slot content fails for hot-reloading
+
+      //不要将组件槽内容设为静态。这避免了
+      // 1. 无法变异插槽节点的组件
+      // 2. 静态插槽内容无法热重新加载
       if (
         !isPlatformReservedTag(node.tag) &&
         node.tag !== 'slot' &&
@@ -10934,6 +10939,7 @@
     ast,
     options
   ) {
+    console.log(options);
     var state = new CodegenState(options);
     var code = ast ? genElement(ast, state) : '_c("div")';
     return {
@@ -10981,12 +10987,13 @@
     }
   }
 
-  // hoist static sub-trees out
+  // 提升静态子树
   function genStatic (el, state) {
     el.staticProcessed = true;
     // Some elements (templates) need to behave differently inside of a v-pre
     // node.  All pre nodes are static roots, so we can use this as a location to
     // wrap a state change and reset it upon exiting the pre node.
+    // 有一些 节点/模板 需要在 v-pre 节点上有不同的表现，所有 pre 节点都是静态节点，因为我们可以将用在包装状态更改和在退出的时候重置 pre。 
     var originalPreState = state.pre;
     if (el.pre) {
       state.pre = el.pre;
@@ -11833,9 +11840,11 @@
     options
   ) {
     var ast = parse(template.trim(), options);
+    // console.log(ast);
     if (options.optimize !== false) {
       optimize(ast, options);
     }
+    console.log(ast);
     var code = generate(ast, options);
     return {
       ast: ast,
