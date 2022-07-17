@@ -2796,6 +2796,7 @@
       null,
       this // for render fns generated for functional component templates
     );
+    console.log(tree);
     markStatic(tree, ("__static__" + index), false);
     return tree
   }
@@ -3119,7 +3120,6 @@
         componentInstance._isMounted = true;
         callHook(componentInstance, 'mounted');
       }
-      console.log(vnode);
       if (vnode.data.keepAlive) {
         if (context._isMounted) {
           // vue-router#1212
@@ -4055,9 +4055,9 @@
     hydrating = false;
     if (vm.$vnode == null) {
       vm._isMounted = true;
-      console.log(vm);
       callHook(vm, 'mounted');
     }
+    console.log(vm);
     return vm
   }
 
@@ -9309,6 +9309,7 @@
 
           // Start tag:
           var startTagMatch = parseStartTag();
+          console.log(startTagMatch);
           if (startTagMatch) {
             handleStartTag(startTagMatch);
             if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
@@ -9416,6 +9417,7 @@
     }
 
     function handleStartTag (match) {
+      console.log(match);
       // 开始标签
       var tagName = match.tagName;
       // 是否是一元标签
@@ -9752,7 +9754,6 @@
             }
           });
         }
-
         if (isForbiddenTag(element) && !isServerRendering()) {
           element.forbidden = true;
           warn$2(
@@ -9785,6 +9786,7 @@
           processIf(element);
           processOnce(element);
         }
+        
 
         if (!root) {
           root = element;
@@ -9799,6 +9801,10 @@
         } else {
           closeElement(element);
         }
+        console.log(element);
+        return;
+
+        console.log(element);
       },
 
       end: function end (tag, start, end$1) {
@@ -9956,6 +9962,7 @@
     processSlotOutlet(element);
     processComponent(element);
     for (var i = 0; i < transforms.length; i++) {
+      console.log(transforms[i]);
       element = transforms[i](element, options) || element;
     }
     processAttrs(element);
@@ -10265,6 +10272,7 @@
 
   function processAttrs (el) {
     var list = el.attrsList;
+    console.table(list);
     var i, l, name, rawName, value, modifiers, syncGen, isDynamic;
     for (i = 0, l = list.length; i < l; i++) {
       name = rawName = list[i].name;
@@ -10561,7 +10569,6 @@
     if (dir.value) {
       addProp(el, 'textContent', ("_s(" + (dir.value) + ")"), dir);
     }
-    console.log(addProp);
   }
 
   /*  */
@@ -10570,7 +10577,6 @@
     if (dir.value) {
       addProp(el, 'innerHTML', ("_s(" + (dir.value) + ")"), dir);
     }
-    console.log(addProp);
   }
 
   var directives$1 = {
@@ -10925,6 +10931,7 @@
     this.warn = options.warn || baseWarn;
     this.transforms = pluckModuleFunction(options.modules, 'transformCode');
     this.dataGenFns = pluckModuleFunction(options.modules, 'genData');
+    console.log(this.dataGenFns);
     this.directives = extend(extend({}, baseDirectives), options.directives);
     var isReservedTag = options.isReservedTag || no;
     this.maybeComponent = function (el) { return !!el.component || !isReservedTag(el.tag); };
@@ -10939,9 +10946,10 @@
     ast,
     options
   ) {
-    console.log(options);
     var state = new CodegenState(options);
+    console.log(ast);
     var code = ast ? genElement(ast, state) : '_c("div")';
+    console.log(code);
     return {
       render: ("with(this){return " + code + "}"),
       staticRenderFns: state.staticRenderFns
@@ -10954,17 +10962,29 @@
     }
 
     if (el.staticRoot && !el.staticProcessed) {
-      return genStatic(el, state)
+      const res = genStatic(el, state);
+      console.log(res);
+      return res
     } else if (el.once && !el.onceProcessed) {
-      return genOnce(el, state)
+      const res = genOnce(el, state)
+      console.log(res);
+      return res
     } else if (el.for && !el.forProcessed) {
-      return genFor(el, state)
+      const res = genFor(el, state)
+      console.log(res);
+      return res
     } else if (el.if && !el.ifProcessed) {
-      return genIf(el, state)
+      const res = genIf(el, state)
+      console.log(res);
+      return res
     } else if (el.tag === 'template' && !el.slotTarget && !state.pre) {
-      return genChildren(el, state) || 'void 0'
-    } else if (el.tag === 'slot') {
-      return genSlot(el, state)
+      const res = genChildren(el, state) || 'void 0'
+      console.log(res);
+      return res
+    } else if (el.tag === '') {
+      const res = genSlot(el, state)
+      console.log(res);
+      return res
     } else {
       // component or element
       var code;
@@ -11158,7 +11178,6 @@
     // component v-model
     if (el.model) {
       data += "model:{value:" + (el.model.value) + ",callback:" + (el.model.callback) + ",expression:" + (el.model.expression) + "},";
-      console.log(data);
     }
     // inline-template
     if (el.inlineTemplate) {
@@ -11840,7 +11859,6 @@
     options
   ) {
     var ast = parse(template.trim(), options);
-    // console.log(ast);
     if (options.optimize !== false) {
       optimize(ast, options);
     }

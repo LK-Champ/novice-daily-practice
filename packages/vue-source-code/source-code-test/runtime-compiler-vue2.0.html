@@ -14,33 +14,119 @@
   </div>
   <div id="app"></div>
   <script>
+    Vue.component('navigation-link', {
+      template: `
+      <a
+        class="nav-link"
+      >
+        <slot></slot>
+      </a>
+      `
+    })
     new Vue({
       el: '#app',
       data: {
-        isShow: true,
+        isShow: 1,
         list: [
           '小白',
           '小黄',
           '小黑',
           '小绿'
         ],
+        text: '小白',
+        isActive: true,
+        activeColor: 'red',
+        hasBind: true,
+        fontSize: 14,
       },
-      methods: {
-        clickItem (item) {
-          console.log(`${item} 被点击了 `);
-        },
-      },
+      comments: true,
       optimize: true,
+      // template: `
+      //   <div>
+      //     <ul class="list">
+      //       <li 
+      //         v-for="(item, index) in list" 
+      //         @click="clickItem(item)"
+      //       >
+      //         {{item}}:{{index}}
+      //       </li>
+      //     </ul>
+      //   </div>
+      // `
+      // template: `
+      //   <div>
+      //     <div><span>一则头条</span></div>
+      //     <div><span>{{text}}</span></div>
+      //     <div><span>一则头条</span></div>
+      //   </div>
+      // `
+      // template: `
+      //   <div>
+      //     <div v-if="isShow === 1">1</div>
+      //     <div v-else-if="isShow === 2">2</div>
+      //     <div v-else>3</div>
+      //   </div>
+      // `
+      // template: `
+      //   <ul>
+      //     <template v-for="item in list">
+      //       <li>{{ item }}</li>
+      //     </template>
+      //   </ul>
+      // `
+      // template: `
+      //   <navigation-link url="/profile">
+      //     Your Profile
+      //   </navigation-link>
+      // `
+      // template: `
+      //   <div>
+      //     <ul v-for="(item, index, arr) in list">
+      //       <li>{{ item }}</li>
+      //     </ul>
+      //   </div>
+      // `
+      // template: `
+      //   <div id="app">
+      //     <span>{{text}}</span>
+      //   </div>
+      // `
+      // template: `
+      //   <div>
+      //     <ul v-for="(item, index, arr) in list">
+      //       <li
+      //         ref="test-ref"
+      //         id="testId"
+      //         key="test-key"
+      //         class="text-clasee" 
+      //         :class="{ active: isActive }" 
+      //         style="color: red" 
+      //         :style="{ color: activeColor, fontSize: fontSize + 'px' }"
+      //         data-a="test-a"
+      //         data-b="test-b"
+      //       >
+      //         {{item}}
+      //       </li>
+      //     </ul>
+      //   </div>
+      // `
+      methods: {
+        clickDiv() {}
+      },
       template: `
-        <div>
-          <ul class="list" v-if="isShow">
-            <li 
-              v-for="(item, index) in list" 
-              @click="clickItem(item)"
-            >
-              {{item}}:{{index}}
-            </li>
-          </ul>
+        <div
+          ref="test-ref"
+          id="testId"
+          key="test-key"
+          class="text-clasee" 
+          :class="{ active: isActive, bindClass: hasBind }" 
+          style="color: red" 
+          :style="{ color: activeColor, fontSize: fontSize + 'px' }"
+          data-a="test-a"
+          data-b="test-b"
+          v-has:a:b:c={isShow}
+        >
+          {{text}}
         </div>
       `
     });
