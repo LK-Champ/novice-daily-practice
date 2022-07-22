@@ -2796,7 +2796,7 @@
       null,
       this // for render fns generated for functional component templates
     );
-    console.log(tree);
+    // console.log(tree);
     markStatic(tree, ("__static__" + index), false);
     return tree
   }
@@ -3402,6 +3402,7 @@
       } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
         // component
         vnode = createComponent(Ctor, data, context, children, tag);
+        console.log(vnode);
       } else {
         // unknown or unlisted namespaced elements
         // check at runtime because it may get assigned a namespace when its
@@ -4057,7 +4058,7 @@
       vm._isMounted = true;
       callHook(vm, 'mounted');
     }
-    console.log(vm);
+    // console.log(vm);
     return vm
   }
 
@@ -9187,6 +9188,7 @@
 
   /*  */
 
+  // 一元标签
   var isUnaryTag = makeMap(
     'area,base,br,col,embed,frame,hr,img,input,isindex,keygen,' +
     'link,meta,param,source,track,wbr'
@@ -9200,6 +9202,7 @@
 
   // HTML5 tags https://html.spec.whatwg.org/multipage/indices.html#elements-3
   // Phrasing Content https://html.spec.whatwg.org/multipage/dom.html#phrasing-content
+  // 非短语标记
   var isNonPhrasingTag = makeMap(
     'address,article,aside,base,blockquote,body,caption,col,colgroup,dd,' +
     'details,dialog,div,dl,dt,fieldset,figcaption,figure,footer,form,' +
@@ -9309,7 +9312,7 @@
 
           // Start tag:
           var startTagMatch = parseStartTag();
-          console.log(startTagMatch);
+          // console.log(startTagMatch);
           if (startTagMatch) {
             handleStartTag(startTagMatch);
             if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
@@ -9417,7 +9420,7 @@
     }
 
     function handleStartTag (match) {
-      console.log(match);
+      // console.log(match);
       // 开始标签
       var tagName = match.tagName;
       // 是否是一元标签
@@ -9801,10 +9804,10 @@
         } else {
           closeElement(element);
         }
-        console.log(element);
+        // console.log(element);
         return;
 
-        console.log(element);
+        // console.log(element);
       },
 
       end: function end (tag, start, end$1) {
@@ -9962,7 +9965,7 @@
     processSlotOutlet(element);
     processComponent(element);
     for (var i = 0; i < transforms.length; i++) {
-      console.log(transforms[i]);
+      // console.log(transforms[i]);
       element = transforms[i](element, options) || element;
     }
     processAttrs(element);
@@ -10272,7 +10275,7 @@
 
   function processAttrs (el) {
     var list = el.attrsList;
-    console.table(list);
+    // console.table(list);
     var i, l, name, rawName, value, modifiers, syncGen, isDynamic;
     for (i = 0, l = list.length; i < l; i++) {
       name = rawName = list[i].name;
@@ -10931,7 +10934,7 @@
     this.warn = options.warn || baseWarn;
     this.transforms = pluckModuleFunction(options.modules, 'transformCode');
     this.dataGenFns = pluckModuleFunction(options.modules, 'genData');
-    console.log(this.dataGenFns);
+    // console.log(this.dataGenFns);
     this.directives = extend(extend({}, baseDirectives), options.directives);
     var isReservedTag = options.isReservedTag || no;
     this.maybeComponent = function (el) { return !!el.component || !isReservedTag(el.tag); };
@@ -10947,9 +10950,9 @@
     options
   ) {
     var state = new CodegenState(options);
-    console.log(ast);
+    // console.log(ast);
     var code = ast ? genElement(ast, state) : '_c("div")';
-    console.log(code);
+    // console.log(code);
     return {
       render: ("with(this){return " + code + "}"),
       staticRenderFns: state.staticRenderFns
@@ -10963,27 +10966,27 @@
 
     if (el.staticRoot && !el.staticProcessed) {
       const res = genStatic(el, state);
-      console.log(res);
+      // console.log(res);
       return res
     } else if (el.once && !el.onceProcessed) {
       const res = genOnce(el, state)
-      console.log(res);
+      // console.log(res);
       return res
     } else if (el.for && !el.forProcessed) {
       const res = genFor(el, state)
-      console.log(res);
+      // console.log(res);
       return res
     } else if (el.if && !el.ifProcessed) {
       const res = genIf(el, state)
-      console.log(res);
+      // console.log(res);
       return res
     } else if (el.tag === 'template' && !el.slotTarget && !state.pre) {
       const res = genChildren(el, state) || 'void 0'
-      console.log(res);
+      // console.log(res);
       return res
     } else if (el.tag === '') {
       const res = genSlot(el, state)
-      console.log(res);
+      // console.log(res);
       return res
     } else {
       // component or element
@@ -11781,6 +11784,7 @@
 
   function createCompilerCreator (baseCompile) {
     return function createCompiler (baseOptions) {
+      // TODO: 编译入口
       function compile (
         template,
         options
@@ -11862,7 +11866,7 @@
     if (options.optimize !== false) {
       optimize(ast, options);
     }
-    console.log(ast);
+    // console.log(ast);
     var code = generate(ast, options);
     return {
       ast: ast,

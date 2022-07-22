@@ -10812,6 +10812,7 @@ var Vue = (function (exports) {
         ensureHydrationRenderer().hydrate(...args);
     });
     const createApp = ((...args) => {
+        console.log(args);
         const app = ensureRenderer().createApp(...args);
         {
             injectNativeTagCheck(app);
@@ -10820,6 +10821,7 @@ var Vue = (function (exports) {
         const { mount } = app;
         app.mount = (containerOrSelector) => {
             const container = normalizeContainer(containerOrSelector);
+            console.log(container);
             if (!container)
                 return;
             const component = app._component;
@@ -11660,9 +11662,14 @@ var Vue = (function (exports) {
         onWarn: defaultOnWarn,
         comments: true
     };
+    // baseParse 主要就做三件事情：创建解析上下文，解析子节点，创建 AST 根节点。
     function baseParse(content, options = {}) {
+        console.log('baseParse content: ', content);
+        console.log('baseParse options: ', options);
+        // 创建解析上下文
         const context = createParserContext(content, options);
         const start = getCursor(context);
+        // 解析 template，并创建 AST
         return createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start));
     }
     function createParserContext(content, rawOptions) {
@@ -11676,13 +11683,21 @@ var Vue = (function (exports) {
                     : rawOptions[key];
         }
         return {
+            // 解析相关的配置
             options,
+            // 当前代码的列号
             column: 1,
+            // 当前代码的行号
             line: 1,
+            // 当前代码相对原始代码的偏移量
             offset: 0,
+            // 表示最初的原始代码
             originalSource: content,
+            // 当前代码
             source: content,
+            // 代码是否在 pre 标签内
             inPre: false,
+            // 代码是否在 v-pre 指令下
             inVPre: false,
             onWarn: options.onWarn
         };
@@ -15231,6 +15246,7 @@ var Vue = (function (exports) {
     }
     // we name it `baseCompile` so that higher order compilers like
     // @vue/compiler-dom can export `compile` while re-exporting everything else.
+    // TODO:  baseCompile 的实现
     function baseCompile(template, options = {}) {
         const onError = options.onError || defaultOnError;
         const isModuleMode = options.mode === 'module';
@@ -15250,8 +15266,11 @@ var Vue = (function (exports) {
         if (options.scopeId && !isModuleMode) {
             onError(createCompilerError(49 /* X_SCOPE_ID_NOT_SUPPORTED */));
         }
+        // TODO: 解析 AST
         const ast = isString(template) ? baseParse(template, options) : template;
+        console.log(ast);
         const [nodeTransforms, directiveTransforms] = getBaseTransformPreset();
+        // TODO: AST 转换
         transform(ast, extend({}, options, {
             prefixIdentifiers,
             nodeTransforms: [
@@ -15261,6 +15280,7 @@ var Vue = (function (exports) {
             directiveTransforms: extend({}, directiveTransforms, options.directiveTransforms || {} // user transforms
             )
         }));
+        // 生成代码
         return generate(ast, extend({}, options, {
             prefixIdentifiers
         }));
@@ -15724,6 +15744,7 @@ var Vue = (function (exports) {
         on: transformOn$1,
         show: transformShow
     };
+    // TODO: 编译入口
     function compile$1(template, options = {}) {
         return baseCompile(template, extend({}, parserOptions, options, {
             nodeTransforms: [
@@ -15745,6 +15766,7 @@ var Vue = (function (exports) {
     }
     const compileCache = Object.create(null);
     function compileToFunction(template, options) {
+        console.log(template);
         if (!isString(template)) {
             if (template.nodeType) {
                 template = template.innerHTML;

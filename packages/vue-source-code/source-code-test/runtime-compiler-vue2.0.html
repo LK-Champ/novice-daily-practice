@@ -9,18 +9,17 @@
 </head>
 <body>
   <div>
-    </br>
+    <div>
     </p>
+    </br>
   </div>
   <div id="app"></div>
   <script>
-    Vue.component('navigation-link', {
+    Vue.component('test-component', {
       template: `
-      <a
-        class="nav-link"
-      >
-        <slot></slot>
-      </a>
+        <div class="test-component">
+          <p>我是 test component</p>
+        </div>
       `
     })
     new Vue({
@@ -41,6 +40,14 @@
       },
       comments: true,
       optimize: true,
+      template: `
+        <div class="container">
+          <test-component />
+          <div class="sibling">
+            <p>我是示例文本</p>
+          </div>
+        </div>
+      `
       // template: `
       //   <div>
       //     <ul class="list">
@@ -110,25 +117,25 @@
       //     </ul>
       //   </div>
       // `
-      methods: {
-        clickDiv() {}
-      },
-      template: `
-        <div
-          ref="test-ref"
-          id="testId"
-          key="test-key"
-          class="text-clasee" 
-          :class="{ active: isActive, bindClass: hasBind }" 
-          style="color: red" 
-          :style="{ color: activeColor, fontSize: fontSize + 'px' }"
-          data-a="test-a"
-          data-b="test-b"
-          v-has:a:b:c={isShow}
-        >
-          {{text}}
-        </div>
-      `
+      // methods: {
+      //   clickDiv() {}
+      // },
+      // template: `
+      //   <div
+      //     ref="test-ref"
+      //     id="testId"
+      //     key="test-key"
+      //     class="text-clasee" 
+      //     :class="{ active: isActive, bindClass: hasBind }" 
+      //     style="color: red" 
+      //     :style="{ color: activeColor, fontSize: fontSize + 'px' }"
+      //     data-a="test-a"
+      //     data-b="test-b"
+      //     v-has:a:b:c={isShow}
+      //   >
+      //     {{text}}
+      //   </div>
+      // `
     });
   </script>
 </body>
