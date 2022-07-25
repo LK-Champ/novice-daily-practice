@@ -10814,6 +10814,7 @@ var Vue = (function (exports) {
     const createApp = ((...args) => {
         console.log(args);
         const app = ensureRenderer().createApp(...args);
+        console.log(app);
         {
             injectNativeTagCheck(app);
             injectCompilerOptionsCheck(app);
@@ -11664,14 +11665,15 @@ var Vue = (function (exports) {
     };
     // baseParse 主要就做三件事情：创建解析上下文，解析子节点，创建 AST 根节点。
     function baseParse(content, options = {}) {
-        console.log('baseParse content: ', content);
-        console.log('baseParse options: ', options);
+        // console.log('baseParse content: ', content);
+        // console.log('baseParse options: ', options);
         // 创建解析上下文
         const context = createParserContext(content, options);
         const start = getCursor(context);
         // 解析 template，并创建 AST
         return createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start));
     }
+    // 创建解析上下文
     function createParserContext(content, rawOptions) {
         const options = extend({}, defaultParserOptions);
         let key;
@@ -11703,6 +11705,7 @@ var Vue = (function (exports) {
         };
     }
     function parseChildren(context, mode, ancestors) {
+        // 父节点
         const parent = last(ancestors);
         const ns = parent ? parent.ns : 0 /* HTML */;
         const nodes = [];
@@ -11714,20 +11717,27 @@ var Vue = (function (exports) {
                     // '{{'
                     node = parseInterpolation(context, mode);
                 }
+                // 处理 < 开头的代码
                 else if (mode === 0 /* DATA */ && s[0] === '<') {
                     // https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
+                    // 节点长度为1，说明代码结尾是 < ，报错
                     if (s.length === 1) {
                         emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 1);
                     }
+                    // 处理 <! 开头的代码
                     else if (s[1] === '!') {
                         // https://html.spec.whatwg.org/multipage/parsing.html#markup-declaration-open-state
+                        // <!-- ：注释节点，
                         if (startsWith(s, '<!--')) {
                             node = parseComment(context);
+                            console.log(node);
                         }
+                        // <!DOCTYPE： <!DOCTYPE 节点
                         else if (startsWith(s, '<!DOCTYPE')) {
                             // Ignore DOCTYPE by a limitation.
                             node = parseBogusComment(context);
                         }
+                        // <![CDATA[：<![CDATA[ 节点
                         else if (startsWith(s, '<![CDATA[')) {
                             if (ns !== 0 /* HTML */) {
                                 node = parseCDATA(context, ancestors);
@@ -11742,16 +11752,20 @@ var Vue = (function (exports) {
                             node = parseBogusComment(context);
                         }
                     }
+                    // 处理</ 结束标签
                     else if (s[1] === '/') {
                         // https://html.spec.whatwg.org/multipage/parsing.html#end-tag-open-state
+                        // 长度为2，说明只有 </ 解说标签，报错
                         if (s.length === 2) {
                             emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 2);
                         }
+                        // </> 缺少元素标记的结束标签，报错
                         else if (s[2] === '>') {
                             emitError(context, 14 /* MISSING_END_TAG_NAME */, 2);
                             advanceBy(context, 3);
                             continue;
                         }
+                        // 
                         else if (/[a-z]/i.test(s[2])) {
                             emitError(context, 23 /* X_INVALID_END_TAG */);
                             parseTag(context, 1 /* End */, parent);
@@ -11762,6 +11776,7 @@ var Vue = (function (exports) {
                             node = parseBogusComment(context);
                         }
                     }
+                    // 解析标签元素节点
                     else if (/[a-z]/i.test(s[1])) {
                         node = parseElement(context, ancestors);
                     }
@@ -11774,14 +11789,17 @@ var Vue = (function (exports) {
                     }
                 }
             }
+            // 如果不是元素，当做为本节点解析
             if (!node) {
                 node = parseText(context, mode);
             }
+            // node 是数组，遍历数组
             if (isArray(node)) {
                 for (let i = 0; i < node.length; i++) {
                     pushNode(nodes, node[i]);
                 }
             }
+            // 添加元素
             else {
                 pushNode(nodes, node);
             }
@@ -11866,27 +11884,35 @@ var Vue = (function (exports) {
         }
         return nodes;
     }
+    // 注释节点的解析
     function parseComment(context) {
         const start = getCursor(context);
         let content;
         // Regular comment.
+        // 注释节点的结束符
         const match = /--(\!)?>/.exec(context.source);
+        // 没有匹配到，
         if (!match) {
             content = context.source.slice(4);
             advanceBy(context, context.source.length);
             emitError(context, 7 /* EOF_IN_COMMENT */);
         }
         else {
+            // 非法注释
             if (match.index <= 3) {
                 emitError(context, 0 /* ABRUPT_CLOSING_OF_EMPTY_COMMENT */);
             }
+            // 注释结束符有问题
             if (match[1]) {
                 emitError(context, 10 /* INCORRECTLY_CLOSED_COMMENT */);
             }
+            // 获取注释的内容
             content = context.source.slice(4, match.index);
             // Advancing with reporting nested comments.
+            // 获取注释内容到注释结束箭头的内容（包括注释的箭头）
             const s = context.source.slice(0, match.index);
             let prevIndex = 1, nestedIndex = 0;
+            // 判断注释嵌套的问题，如果存在直接报错
             while ((nestedIndex = s.indexOf('<!--', prevIndex)) !== -1) {
                 advanceBy(context, nestedIndex - prevIndex + 1);
                 if (nestedIndex + 4 < s.length) {
@@ -12360,6 +12386,7 @@ var Vue = (function (exports) {
         return advancePositionWithClone(start, context.originalSource.slice(start.offset, numberOfCharacters), numberOfCharacters);
     }
     function emitError(context, code, offset, loc = getCursor(context)) {
+        console.log({context, code, offset, loc});
         if (offset) {
             loc.offset += offset;
             loc.column += offset;
@@ -13027,6 +13054,7 @@ var Vue = (function (exports) {
         return context;
     }
     function generate(ast, options = {}) {
+        console.log(ast);
         const context = createCodegenContext(ast, options);
         if (options.onContextCreated)
             options.onContextCreated(context);

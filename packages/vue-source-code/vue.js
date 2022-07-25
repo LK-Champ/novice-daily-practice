@@ -10950,7 +10950,7 @@
     options
   ) {
     var state = new CodegenState(options);
-    // console.log(ast);
+    console.log(ast);
     var code = ast ? genElement(ast, state) : '_c("div")';
     // console.log(code);
     return {
