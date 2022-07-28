@@ -51,3 +51,31 @@ _c(
   },
   [_v('\n          ' + _s(text) + '\n        ')],
 );
+
+with (this) {
+  return _c('div', [
+    _e(' 这是一段注释 '),
+    _v(' \n        ' + _s(msg) + '\n        '),
+    _c('div', [_v('hello, ' + _s(msg) + '.')]),
+    _v(' \n        this is text.\n      '),
+  ]);
+}
+
+
+const _Vue = Vue
+const { createElementVNode: _createElementVNode, createCommentVNode: _createCommentVNode, createTextVNode: _createTextVNode } = _Vue
+
+const _hoisted_1 = /*#__PURE__*/_createTextVNode(" this is text. ")
+
+return function render(_ctx, _cache) {
+  with (_ctx) {
+    const { createCommentVNode: _createCommentVNode, toDisplayString: _toDisplayString, createElementVNode: _createElementVNode, createTextVNode: _createTextVNode, openBlock: _openBlock, createElementBlock: _createElementBlock } = _Vue
+
+    return (_openBlock(), _createElementBlock("div", null, [
+      _createCommentVNode(" 这是一段注释 "),
+      _createTextVNode(_toDisplayString(msg) + " ", 1 /* TEXT */),
+      _createElementVNode("div", null, "hello, " + _toDisplayString(msg) + ".", 1 /* TEXT */),
+      _hoisted_1
+    ]))
+  }
+}

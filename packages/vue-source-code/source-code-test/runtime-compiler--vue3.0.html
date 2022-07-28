@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../vue3.0.js"></script>
+</head>
+<body>
+  <div class="" id="app"></div>
+</body>
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        msg: '小白'
+      }
+    },
+    comments: false,
+    // template: `<div> 
+    //     <!-- 这是一段注释 --> 
+    //     {{msg}}
+    //     <div>hello, {{msg}}.</div> 
+    //     this is text.
+    //   </div> 
+    // `
+    // template: `
+    //   <div> 
+    //     <p> 
+    //       <span> 
+    //         <div> 
+    //           <p> 
+    //             1
+    //           </p> 
+    //         </div> 
+    //       </span> 
+    //     </p> 
+    //   </div> 
+    // `
+    // delimiters: [`[[`, `]]`],
+    // template: `
+    //   <div>
+    //     [[ msg ]]
+    //   </div>
+    // `
+    // template: `这是{{一段文本`
+    template: `
+      <div>
+        <ul v-for="(item, index, arr) in list">
+          <li
+            ref="test-ref"
+            id="testId"
+            key="test-key"
+            class="text-clasee" 
+            :class="{ active: isActive }" 
+            style="color: red" 
+            :style="{ color: activeColor, fontSize: fontSize + 'px' }"
+            data-a="test-a"
+            data-b="test-b"
+          >
+            {{item}}
+          </li>
+        </ul>
+      </div>
+    `
+  });
+
+  app.mount('#app')
+</script>
+</html>

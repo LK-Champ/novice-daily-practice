@@ -11665,13 +11665,14 @@ var Vue = (function (exports) {
     };
     // baseParse 主要就做三件事情：创建解析上下文，解析子节点，创建 AST 根节点。
     function baseParse(content, options = {}) {
-        // console.log('baseParse content: ', content);
-        // console.log('baseParse options: ', options);
         // 创建解析上下文
         const context = createParserContext(content, options);
         const start = getCursor(context);
+        console.log(JSON.parse(JSON.stringify(context.source)));
         // 解析 template，并创建 AST
-        return createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start));
+        const res = createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start));
+        console.log(res);
+        return res;
     }
     // 创建解析上下文
     function createParserContext(content, rawOptions) {
@@ -11701,6 +11702,7 @@ var Vue = (function (exports) {
             inPre: false,
             // 代码是否在 v-pre 指令下
             inVPre: false,
+            // warn 函数
             onWarn: options.onWarn
         };
     }
@@ -11730,7 +11732,6 @@ var Vue = (function (exports) {
                         // <!-- ：注释节点，
                         if (startsWith(s, '<!--')) {
                             node = parseComment(context);
-                            console.log(node);
                         }
                         // <!DOCTYPE： <!DOCTYPE 节点
                         else if (startsWith(s, '<!DOCTYPE')) {
@@ -11792,6 +11793,7 @@ var Vue = (function (exports) {
             // 如果不是元素，当做为本节点解析
             if (!node) {
                 node = parseText(context, mode);
+                console.log(node);
             }
             // node 是数组，遍历数组
             if (isArray(node)) {
@@ -11804,6 +11806,7 @@ var Vue = (function (exports) {
                 pushNode(nodes, node);
             }
         }
+        console.log(nodes);
         // Whitespace handling strategy like v2
         let removedWhitespace = false;
         if (mode !== 2 /* RAWTEXT */ && mode !== 1 /* RCDATA */) {
@@ -11835,6 +11838,7 @@ var Vue = (function (exports) {
                         }
                     }
                     else if (shouldCondense) {
+                        // 在压缩模式下，压缩文本中的连续空白
                         // in condense mode, consecutive whitespaces in text are condensed
                         // down to a single space.
                         node.content = node.content.replace(/[\t\r\n\f ]+/g, ' ');
@@ -11922,6 +11926,11 @@ var Vue = (function (exports) {
             }
             advanceBy(context, match.index + match[0].length - prevIndex + 1);
         }
+        // console.log({
+        //     type: 3 /* COMMENT */,
+        //     content,
+        //     loc: getSelection(context, start)
+        // });
         return {
             type: 3 /* COMMENT */,
             content,
@@ -11941,6 +11950,11 @@ var Vue = (function (exports) {
             content = context.source.slice(contentStart, closeIndex);
             advanceBy(context, closeIndex + 1);
         }
+        // console.log( {
+        //     type: 3 /* COMMENT */,
+        //     content,
+        //     loc: getSelection(context, start)
+        // });
         return {
             type: 3 /* COMMENT */,
             content,
@@ -12306,6 +12320,18 @@ var Vue = (function (exports) {
         const endOffset = rawContentLength - (preTrimContent.length - content.length - startOffset);
         advancePositionWithMutation(innerEnd, rawContent, endOffset);
         advanceBy(context, close.length);
+        console.log({
+            type: 5 /* INTERPOLATION */,
+            content: {
+                type: 4 /* SIMPLE_EXPRESSION */,
+                isStatic: false,
+                // Set `isConstant` to false by default and will decide in transformExpression
+                constType: 0 /* NOT_CONSTANT */,
+                content,
+                loc: getSelection(context, innerStart, innerEnd)
+            },
+            loc: getSelection(context, start)
+        });
         return {
             type: 5 /* INTERPOLATION */,
             content: {
@@ -12328,8 +12354,14 @@ var Vue = (function (exports) {
                 endIndex = index;
             }
         }
+        console.log(endIndex);
         const start = getCursor(context);
         const content = parseTextData(context, endIndex, mode);
+        console.log({
+            type: 2 /* TEXT */,
+            content,
+            loc: getSelection(context, start)
+        });
         return {
             type: 2 /* TEXT */,
             content,
@@ -12340,6 +12372,7 @@ var Vue = (function (exports) {
      * Get text data with a given length from the current location.
      * This translates HTML entities in the text data.
      */
+    // 从当前位置获取给定长度的文本数据，这将装换文本数据中的 HTML 实体
     function parseTextData(context, length, mode) {
         const rawText = context.source.slice(0, length);
         advanceBy(context, length);
@@ -12373,8 +12406,11 @@ var Vue = (function (exports) {
     }
     function advanceBy(context, numberOfCharacters) {
         const { source } = context;
+        // console.log(numberOfCharacters);
+        // console.log(JSON.parse(JSON.stringify(context)));
         advancePositionWithMutation(context, source, numberOfCharacters);
         context.source = source.slice(numberOfCharacters);
+        // console.log(JSON.parse(JSON.stringify(context)));
     }
     function advanceSpaces(context) {
         const match = /^[\t\r\n\f ]+/.exec(context.source);
@@ -12386,7 +12422,6 @@ var Vue = (function (exports) {
         return advancePositionWithClone(start, context.originalSource.slice(start.offset, numberOfCharacters), numberOfCharacters);
     }
     function emitError(context, code, offset, loc = getCursor(context)) {
-        console.log({context, code, offset, loc});
         if (offset) {
             loc.offset += offset;
             loc.column += offset;
@@ -13054,7 +13089,6 @@ var Vue = (function (exports) {
         return context;
     }
     function generate(ast, options = {}) {
-        console.log(ast);
         const context = createCodegenContext(ast, options);
         if (options.onContextCreated)
             options.onContextCreated(context);
@@ -15309,9 +15343,10 @@ var Vue = (function (exports) {
             )
         }));
         // 生成代码
-        return generate(ast, extend({}, options, {
+        const render = generate(ast, extend({}, options, {
             prefixIdentifiers
         }));
+        return render;
     }
 
     const noopDirectiveTransform = () => ({ props: [] });
@@ -15794,7 +15829,6 @@ var Vue = (function (exports) {
     }
     const compileCache = Object.create(null);
     function compileToFunction(template, options) {
-        console.log(template);
         if (!isString(template)) {
             if (template.nodeType) {
                 template = template.innerHTML;
