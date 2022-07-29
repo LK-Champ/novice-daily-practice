@@ -10812,9 +10812,9 @@ var Vue = (function (exports) {
         ensureHydrationRenderer().hydrate(...args);
     });
     const createApp = ((...args) => {
-        console.log(args);
+        // console.log(args);
         const app = ensureRenderer().createApp(...args);
-        console.log(app);
+        // console.log(app);
         {
             injectNativeTagCheck(app);
             injectCompilerOptionsCheck(app);
@@ -10822,7 +10822,7 @@ var Vue = (function (exports) {
         const { mount } = app;
         app.mount = (containerOrSelector) => {
             const container = normalizeContainer(containerOrSelector);
-            console.log(container);
+            // console.log(container);
             if (!container)
                 return;
             const component = app._component;
@@ -11668,10 +11668,10 @@ var Vue = (function (exports) {
         // 创建解析上下文
         const context = createParserContext(content, options);
         const start = getCursor(context);
-        console.log(JSON.parse(JSON.stringify(context.source)));
+        // console.log(JSON.parse(JSON.stringify(context.source)));
         // 解析 template，并创建 AST
         const res = createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start));
-        console.log(res);
+        // console.log(res);
         return res;
     }
     // 创建解析上下文
@@ -11793,7 +11793,7 @@ var Vue = (function (exports) {
             // 如果不是元素，当做为本节点解析
             if (!node) {
                 node = parseText(context, mode);
-                console.log(node);
+                // console.log(node);
             }
             // node 是数组，遍历数组
             if (isArray(node)) {
@@ -11806,7 +11806,7 @@ var Vue = (function (exports) {
                 pushNode(nodes, node);
             }
         }
-        console.log(nodes);
+        // console.log(nodes);
         // Whitespace handling strategy like v2
         let removedWhitespace = false;
         if (mode !== 2 /* RAWTEXT */ && mode !== 1 /* RCDATA */) {
@@ -11962,6 +11962,7 @@ var Vue = (function (exports) {
         };
     }
     function parseElement(context, ancestors) {
+        // debugger;
         // Start tag.
         const wasInPre = context.inPre;
         const wasInVPre = context.inVPre;
@@ -11977,6 +11978,7 @@ var Vue = (function (exports) {
             if (isVPreBoundary) {
                 context.inVPre = false;
             }
+            // console.log(element);
             return element;
         }
         // Children.
@@ -12005,6 +12007,7 @@ var Vue = (function (exports) {
         if (isVPreBoundary) {
             context.inVPre = false;
         }
+        // console.log(element);
         return element;
     }
     const isSpecialTemplateDirective = /*#__PURE__*/ makeMap(`if,else,else-if,for,slot`);
@@ -12065,6 +12068,17 @@ var Vue = (function (exports) {
                 tagType = 1 /* COMPONENT */;
             }
         }
+        console.log({
+            type: 1 /* ELEMENT */,
+            ns,
+            tag,
+            tagType,
+            props,
+            isSelfClosing,
+            children: [],
+            loc: getSelection(context, start),
+            codegenNode: undefined // to be created during transform phase
+        });
         return {
             type: 1 /* ELEMENT */,
             ns,
@@ -12152,16 +12166,27 @@ var Vue = (function (exports) {
     }
     function parseAttribute(context, nameSet) {
         // Name.
+        // 获取当前代码位置信息
         const start = getCursor(context);
+        // 匹配属性
+        // 0: "key"
+        // groups: undefined
+        // index: 0
+        // input: "key=\"test-key\">1</div>"
         const match = /^[^\t\r\n\f />][^\t\r\n\f />=]*/.exec(context.source);
+        // 获取属性的名称
         const name = match[0];
+        // 如果属性名称已经在集合存在，报错
         if (nameSet.has(name)) {
             emitError(context, 2 /* DUPLICATE_ATTRIBUTE */);
         }
+        // 添加属性名到集合中
         nameSet.add(name);
+        // 如果名称以 ”=“ 开头，报错，原因是后续的
         if (name[0] === '=') {
             emitError(context, 19 /* UNEXPECTED_EQUALS_SIGN_BEFORE_ATTRIBUTE_NAME */);
         }
+        // 属性中包含 「"」、「'」、「<」 时报错。
         {
             const pattern = /["'<]/g;
             let m;
@@ -12169,6 +12194,7 @@ var Vue = (function (exports) {
                 emitError(context, 17 /* UNEXPECTED_CHARACTER_IN_ATTRIBUTE_NAME */, m.index);
             }
         }
+        // 移动代码位置
         advanceBy(context, name.length);
         // Value
         let value = undefined;
@@ -12184,6 +12210,7 @@ var Vue = (function (exports) {
         const loc = getSelection(context, start);
         if (!context.inVPre && /^(v-[A-Za-z0-9-]|:|\.|@|#)/.test(name)) {
             const match = /(?:^v-([a-z0-9-]+))?(?:(?::|^\.|^@|^#)(\[[^\]]+\]|[^\.]+))?(.+)?$/i.exec(name);
+            console.log(match);
             let isPropShorthand = startsWith(name, '.');
             let dirName = match[1] ||
                 (isPropShorthand || startsWith(name, ':')
@@ -12271,6 +12298,7 @@ var Vue = (function (exports) {
         let content;
         const quote = context.source[0];
         const isQuoted = quote === `"` || quote === `'`;
+        // debugger;
         if (isQuoted) {
             // Quoted value.
             advanceBy(context, 1);
@@ -12320,18 +12348,18 @@ var Vue = (function (exports) {
         const endOffset = rawContentLength - (preTrimContent.length - content.length - startOffset);
         advancePositionWithMutation(innerEnd, rawContent, endOffset);
         advanceBy(context, close.length);
-        console.log({
-            type: 5 /* INTERPOLATION */,
-            content: {
-                type: 4 /* SIMPLE_EXPRESSION */,
-                isStatic: false,
-                // Set `isConstant` to false by default and will decide in transformExpression
-                constType: 0 /* NOT_CONSTANT */,
-                content,
-                loc: getSelection(context, innerStart, innerEnd)
-            },
-            loc: getSelection(context, start)
-        });
+        // console.log({
+        //     type: 5 /* INTERPOLATION */,
+        //     content: {
+        //         type: 4 /* SIMPLE_EXPRESSION */,
+        //         isStatic: false,
+        //         // Set `isConstant` to false by default and will decide in transformExpression
+        //         constType: 0 /* NOT_CONSTANT */,
+        //         content,
+        //         loc: getSelection(context, innerStart, innerEnd)
+        //     },
+        //     loc: getSelection(context, start)
+        // });
         return {
             type: 5 /* INTERPOLATION */,
             content: {
@@ -12354,14 +12382,14 @@ var Vue = (function (exports) {
                 endIndex = index;
             }
         }
-        console.log(endIndex);
+        // console.log(endIndex);
         const start = getCursor(context);
         const content = parseTextData(context, endIndex, mode);
-        console.log({
-            type: 2 /* TEXT */,
-            content,
-            loc: getSelection(context, start)
-        });
+        // console.log({
+        //     type: 2 /* TEXT */,
+        //     content,
+        //     loc: getSelection(context, start)
+        // });
         return {
             type: 2 /* TEXT */,
             content,
@@ -15330,7 +15358,7 @@ var Vue = (function (exports) {
         }
         // TODO: 解析 AST
         const ast = isString(template) ? baseParse(template, options) : template;
-        console.log(ast);
+        // console.log(ast);
         const [nodeTransforms, directiveTransforms] = getBaseTransformPreset();
         // TODO: AST 转换
         transform(ast, extend({}, options, {
