@@ -24,25 +24,15 @@
     },
     comments: false,
     // template: `<div> 
-    //     <!-- 这是一段注释 --> 
+    //     <!--> 
     //     {{msg}}
     //     <div>hello, {{msg}}.</div> 
     //     this is text.
     //   </div> 
     // `
-    // template: `
-    //   <div> 
-    //     <p> 
-    //       <span> 
-    //         <div> 
-    //           <p> 
-    //             1
-    //           </p> 
-    //         </div> 
-    //       </span> 
-    //     </p> 
-    //   </div> 
-    // `
+    template: `
+      <
+    `
     // delimiters: [`[[`, `]]`],
     // template: `
     //   <area />
@@ -60,22 +50,22 @@
     //   <track />
     //   <wbr />
     // `
-    template: `
-      <templat 
-        ref="test-ref"
-        id="testId"
-        key="test-key"
-        class="text-clasee" 
-        style="color: red" 
-        data-a="test-a"
-        data-b="test-b"
-        :class="{ active: isActive }" 
-        :style="{ color: activeColor, fontSize: fontSize + 'px' }"
-        v-bind="isShow"
-        v-has:a:b:c={isShow}
-        @click="clickItem(item)"
-      >1</templat>
-    `
+    // template: `
+    //   <templat 
+    //     ref="test-ref"
+    //     id="testId"
+    //     key="test-key"
+    //     class="text-clasee" 
+    //     style="color: red" 
+    //     data-a="test-a"
+    //     data-b="test-b"
+    //     :class="{ active: isActive }" 
+    //     :style="{ color: activeColor, fontSize: fontSize + 'px' }"
+    //     v-bind="isShow"
+    //     v-has:a:b:c={isShow}
+    //     @click="clickItem(item)"
+    //   >1</templat>
+    // `
     // template: `
     //   <div key="test-key">1</div>
     // `
@@ -100,14 +90,15 @@
     // `
   });
 
-  app.directive('has', {
-    mounted(el, binding) {
-      // el.style.position = 'fixed'
-      // // binding.value 是我们传递给指令的值——在这里是 200
-      // el.style.top = binding.value + 'px'
-    }
-  });
+  // app.directive('has', {
+  //   mounted(el, binding) {
+  //     // el.style.position = 'fixed'
+  //     // // binding.value 是我们传递给指令的值——在这里是 200
+  //     // el.style.top = binding.value + 'px'
+  //   }
+  // });
 
+  // app.config.compilerOptions.whitespace = 'preserve'
   app.mount('#app')
 </script>
 </html>

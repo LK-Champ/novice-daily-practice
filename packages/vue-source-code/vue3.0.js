@@ -11668,10 +11668,10 @@ var Vue = (function (exports) {
         // 创建解析上下文
         const context = createParserContext(content, options);
         const start = getCursor(context);
-        // console.log(JSON.parse(JSON.stringify(context.source)));
+        console.log(JSON.parse(JSON.stringify(context.source)));
         // 解析 template，并创建 AST
         const res = createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start));
-        // console.log(res);
+        console.log(res);
         return res;
     }
     // 创建解析上下文
@@ -11806,7 +11806,6 @@ var Vue = (function (exports) {
                 pushNode(nodes, node);
             }
         }
-        // console.log(nodes);
         // Whitespace handling strategy like v2
         let removedWhitespace = false;
         if (mode !== 2 /* RAWTEXT */ && mode !== 1 /* RCDATA */) {
@@ -11821,6 +11820,9 @@ var Vue = (function (exports) {
                         // - the whitespace is the first or last node, or:
                         // - (condense mode) the whitespace is adjacent to a comment, or:
                         // - (condense mode) the whitespace is between two elements AND contains newline
+                        // 如果空白字符是第一个节点或者是最后一个节点
+                        // 如果空白字符于注释相连
+                        // 如果空白字符处于两个节点之间并包含换行符
                         if (!prev ||
                             !next ||
                             (shouldCondense &&
@@ -11859,6 +11861,7 @@ var Vue = (function (exports) {
                 }
             }
         }
+        console.log(Boolean);
         return removedWhitespace ? nodes.filter(Boolean) : nodes;
     }
     function pushNode(nodes, node) {
@@ -12068,17 +12071,17 @@ var Vue = (function (exports) {
                 tagType = 1 /* COMPONENT */;
             }
         }
-        console.log({
-            type: 1 /* ELEMENT */,
-            ns,
-            tag,
-            tagType,
-            props,
-            isSelfClosing,
-            children: [],
-            loc: getSelection(context, start),
-            codegenNode: undefined // to be created during transform phase
-        });
+        // console.log({
+        //     type: 1 /* ELEMENT */,
+        //     ns,
+        //     tag,
+        //     tagType,
+        //     props,
+        //     isSelfClosing,
+        //     children: [],
+        //     loc: getSelection(context, start),
+        //     codegenNode: undefined // to be created during transform phase
+        // });
         return {
             type: 1 /* ELEMENT */,
             ns,
@@ -15358,7 +15361,7 @@ var Vue = (function (exports) {
         }
         // TODO: 解析 AST
         const ast = isString(template) ? baseParse(template, options) : template;
-        // console.log(ast);
+        console.log(ast);
         const [nodeTransforms, directiveTransforms] = getBaseTransformPreset();
         // TODO: AST 转换
         transform(ast, extend({}, options, {

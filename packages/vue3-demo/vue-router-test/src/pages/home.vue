@@ -1,3 +1,6 @@
 <template>
-  <div>1</div>
+  <div>
+    <!-->
+    <p>1</p>
+  </div>
 </template>
