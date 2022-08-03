@@ -14,16 +14,26 @@
   const app = Vue.createApp({
     data() {
       return {
-        msg: '小白'
+        show: true,
+        msg: '小白',
+        num1: 1,
+        num2: 2
       }
     },
     template: `
-      <p>无用节点测试</p>
-      <div> 
+      <div>
         <!-- 这是一段注释 --> 
         {{msg}}
-        <div>hello, {{msg}}.</div> 
+        <br />
         this is text.
+        <div v-if="show">
+          hello, {{msg}}.
+        </div>
+        <div v-else>
+          <p>>hello, {{ num1 + num2 }}</p>
+          <p>我是静态节点</p>
+          <p>我也是静态节点</p>
+        </div>
       </div> 
     `
   });

@@ -11709,6 +11709,7 @@ var Vue = (function (exports) {
         const parent = last(ancestors);
         const ns = parent ? parent.ns : 0 /* HTML */;
         const nodes = [];
+        console.log(mode);
         while (!isEnd(context, mode, ancestors)) {
             const s = context.source;
             let node = undefined;
