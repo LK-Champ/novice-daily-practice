@@ -1,8 +1,8 @@
 
 <template>
   <div>
-    <RouterLink to="/">首页</RouterLink> | 
-    <RouterLink to="/about">关于</RouterLink>
+    <RouterLink to="/"></RouterLink>
+    <!-- <RouterLink to="/about">关于</RouterLink> -->
   </div>
   
 <RouterView v-slot="{ Component }">
